@@ -689,7 +689,7 @@ class FunctionBinaryArithmetic : public IFunction
         ColumnNumbers new_arguments = arguments;
 
         /// Interval argument must be second.
-        if (WhichDataType(block.getByPosition(arguments[0]).type).isInterval())
+        if (WhichDataType(block.getByPosition(arguments[1]).type).isDateOrDateTime())
             std::swap(new_arguments[0], new_arguments[1]);
 
         /// Change interval argument type to its representation
@@ -749,7 +749,7 @@ public:
                 new_arguments[i].type = arguments[i];
 
             /// Interval argument must be second.
-            if (WhichDataType(new_arguments[0].type).isInterval())
+            if (WhichDataType(new_arguments[1].type).isDateOrDateTime())
                 std::swap(new_arguments[0], new_arguments[1]);
 
             /// Change interval argument to its representation
