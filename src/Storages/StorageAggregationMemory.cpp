@@ -173,10 +173,14 @@ Pipe StorageAggregatingMemory::read(
     size_t /*max_block_size*/,
     unsigned num_streams)
 {
+    LOG_DEBUG(&Poco::Logger::get("Arthur"), "pre-StorageAggregatingMemory::read");
+
     metadata_snapshot->check(column_names, getVirtuals(), getStorageID());
 
     auto current_data = data.get();
     size_t size = current_data->size();
+
+    LOG_DEBUG(&Poco::Logger::get("Arthur"), "data size = {}", size);
 
     if (num_streams > size)
         num_streams = size;
@@ -194,9 +198,9 @@ Pipe StorageAggregatingMemory::read(
 }
 
 
-BlockOutputStreamPtr StorageAggregatingMemory::write(const ASTPtr & /*query*/, const StorageMetadataPtr & metadata_snapshot, const Context & /*context*/)
+BlockOutputStreamPtr StorageAggregatingMemory::write(const ASTPtr & query, const StorageMetadataPtr & metadata_snapshot, const Context & /*context*/)
 {
-    // GOIN log
+    LOG_DEBUG(&Poco::Logger::get("Arthur"), "pre-StorageAggregatingMemory::write, query={}", serializeAST(*query));
     return std::make_shared<MemoryBlockOutputStream>(*this, metadata_snapshot);
 }
 
