@@ -110,12 +110,17 @@ public:
         : storage(storage_)
         , metadata_snapshot(metadata_snapshot_)
     {
+        // log panics here
+        // LOG_DEBUG(&Poco::Logger::get("Arthur"), "MemoryBlockOutputStream constructor, inside Aggregation ver");
     }
 
     Block getHeader() const override { return metadata_snapshot->getSampleBlock(); }
 
     void write(const Block & block) override
     {
+        // log panics here
+        // LOG_DEBUG(&Poco::Logger::get("Arthur"), "pre-write StorageAggregationMemory, structure={}, names={}, index={}", block.dumpStructure(), block.dumpNames(), block.dumpIndex());
+
         metadata_snapshot->check(block, true);
         new_blocks.emplace_back(block);
     }
@@ -213,6 +218,7 @@ Pipe StorageAggregatingMemory::read(
 
 BlockOutputStreamPtr StorageAggregatingMemory::write(const ASTPtr & /*query*/, const StorageMetadataPtr & metadata_snapshot, const Context & /*context*/)
 {
+    // GOIN log
     return std::make_shared<MemoryBlockOutputStream>(*this, metadata_snapshot);
 }
 
