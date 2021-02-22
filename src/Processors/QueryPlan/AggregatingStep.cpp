@@ -47,6 +47,8 @@ AggregatingStep::AggregatingStep(
 
 void AggregatingStep::transformPipeline(QueryPipeline & pipeline)
 {
+    LOG_DEBUG(&Poco::Logger::get("Arthur"), "pre-transformPipeline AggregatingStep");
+
     QueryPipelineProcessorsCollector collector(pipeline, this);
 
     /// Forget about current totals and extremes. They will be calculated again after aggregation if needed.

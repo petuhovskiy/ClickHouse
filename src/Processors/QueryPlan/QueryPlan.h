@@ -85,10 +85,10 @@ public:
 
     using Nodes = std::list<Node>;
 
-private:
+// private:
     Nodes nodes;
     Node * root = nullptr;
-
+private:
     void checkInitialized() const;
     void checkNotCompleted() const;
 

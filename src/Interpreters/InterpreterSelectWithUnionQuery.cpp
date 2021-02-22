@@ -134,6 +134,8 @@ InterpreterSelectWithUnionQuery::InterpreterSelectWithUnionQuery(
 {
     ASTSelectWithUnionQuery * ast = query_ptr->as<ASTSelectWithUnionQuery>();
 
+    LOG_DEBUG(&Poco::Logger::get("Arthur"), "InterpreterSelectWithUnionQuery constructor");
+
     const Settings & settings = context->getSettingsRef();
     if (options.subquery_depth == 0 && (settings.limit > 0 || settings.offset > 0))
         settings_limit_offset_needed = true;
@@ -277,6 +279,7 @@ InterpreterSelectWithUnionQuery::InterpreterSelectWithUnionQuery(
     options.ignore_limits |= all_nested_ignore_limits;
     options.ignore_quota |= all_nested_ignore_quota;
 
+    LOG_DEBUG(&Poco::Logger::get("Arthur"), "InterpreterSelectWithUnionQuery constructor finished, num_children={}", num_children);
 }
 
 Block InterpreterSelectWithUnionQuery::getCommonHeaderForUnion(const Blocks & headers)
@@ -406,8 +409,16 @@ BlockIO InterpreterSelectWithUnionQuery::execute()
 {
     BlockIO res;
 
+    LOG_DEBUG(&Poco::Logger::get("Arthur"), "execute InterpreterSelectWithUnionQuery");
+
     QueryPlan query_plan;
     buildQueryPlan(query_plan);
+
+    LOG_DEBUG(&Poco::Logger::get("Arthur"), "query plan is ready");
+
+    for (auto && it : query_plan.nodes) {
+        LOG_DEBUG(&Poco::Logger::get("Arthur"), "query step explan => {}", debugExplainStep(*it.step));
+    }
 
     auto pipeline = query_plan.buildQueryPipeline();
 

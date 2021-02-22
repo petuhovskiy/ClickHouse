@@ -421,6 +421,8 @@ void QueryPipeline::initRowsBeforeLimit()
 
 PipelineExecutorPtr QueryPipeline::execute()
 {
+    LOG_DEBUG(&Poco::Logger::get("Arthur"), "pre-execute pipeline");
+
     if (!isCompleted())
         throw Exception("Cannot execute pipeline because it is not completed.", ErrorCodes::LOGICAL_ERROR);
 

@@ -380,6 +380,8 @@ static std::tuple<ASTPtr, BlockIO> executeQueryImpl(
         ast = parseQuery(parser, begin, end, "", max_query_size, settings.max_parser_depth);
 #endif
 
+        LOG_DEBUG(&Poco::Logger::get("Arthur"), "got ast");
+
         /// Interpret SETTINGS clauses as early as possible (before invoking the corresponding interpreter),
         /// to allow settings to take effect.
         if (const auto * select_query = ast->as<ASTSelectQuery>())
@@ -475,6 +477,8 @@ static std::tuple<ASTPtr, BlockIO> executeQueryImpl(
             query = serializeAST(*ast);
         }
 
+        LOG_DEBUG(&Poco::Logger::get("Arthur"), "got serialized  ast {}", serializeAST(*ast));
+
         /// Check the limits.
         checkASTSizeLimits(*ast, settings);
 
@@ -541,10 +545,14 @@ static std::tuple<ASTPtr, BlockIO> executeQueryImpl(
             limits.size_limits = SizeLimits(settings.max_result_rows, settings.max_result_bytes, settings.result_overflow_mode);
         }
 
+        LOG_DEBUG(&Poco::Logger::get("Arthur"), "pre-execute interpreter");
+
         {
             OpenTelemetrySpanHolder span("IInterpreter::execute()");
             res = interpreter->execute();
         }
+
+        LOG_DEBUG(&Poco::Logger::get("Arthur"), "interpreter executed");
 
         QueryPipeline & pipeline = res.pipeline;
         bool use_processors = pipeline.initialized();
@@ -612,6 +620,8 @@ static std::tuple<ASTPtr, BlockIO> executeQueryImpl(
                 }
             }
         }
+
+        LOG_DEBUG(&Poco::Logger::get("Arthur"), "before query log elem");
 
         /// Everything related to query log.
         {
@@ -747,6 +757,8 @@ static std::tuple<ASTPtr, BlockIO> executeQueryImpl(
                         elem.result_bytes = output_format->getResultBytes();
                     }
                 }
+
+                LOG_DEBUG(&Poco::Logger::get("Arthur"), "rows were read");
 
                 if (elem.read_rows != 0)
                 {
@@ -983,6 +995,8 @@ void executeQuery(
 
     auto & pipeline = streams.pipeline;
 
+    LOG_DEBUG(&Poco::Logger::get("Arthur"), "got pipeline {}");
+
     try
     {
         if (streams.out)
@@ -1080,6 +1094,8 @@ void executeQuery(
             }
 
             {
+                LOG_DEBUG(&Poco::Logger::get("Arthur"), "pre-execute pipeline");
+
                 auto executor = pipeline.execute();
                 executor->execute(pipeline.getNumThreads());
             }

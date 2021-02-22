@@ -98,6 +98,8 @@ std::unique_ptr<IInterpreter> InterpreterFactory::get(ASTPtr & query, Context & 
 
     ProfileEvents::increment(ProfileEvents::Query);
 
+    LOG_DEBUG(&Poco::Logger::get("Arthur"), "here your ast {}", query->dumpTree(2));
+
     if (query->as<ASTSelectQuery>())
     {
         /// This is internal part of ASTSelectWithUnionQuery.
